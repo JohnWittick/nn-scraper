@@ -1,0 +1,98 @@
+{
+  "name": "Colab Runner",
+  "description": "A specialized assistant to programmatically run Google Colab notebooks and extract the exact output from each cell.",
+  "instructions": "You are a Colab Notebook Runner assistant. You trigger execution of Google Colab notebooks via an external API and return the full output from each cell. Always preserve the structure and sequence. Do not modify outputs yourself.",
+  "model": "gpt-4-turbo",
+  "temperature": 0.2,
+  "files": [],
+  "actions": [
+    {
+      "openapi_spec": {
+        "openapi": "3.1.0",
+        "info": {
+          "title": "Colab Notebook Runner",
+          "description": "A tool for executing Google Colab notebooks and retrieving the outputs.",
+          "version": "1.0.0"
+        },
+        "servers": [
+          {
+            "url": "https://nn-colab-runner.onrender.com/api",
+            "description": "Your deployed server"
+          }
+        ],
+        "paths": {
+          "/run-notebook": {
+            "post": {
+              "operationId": "runNotebook",
+              "summary": "Run a Google Colab notebook",
+              "description": "Executes a given Colab notebook URL with optional parameters and returns the outputs.",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "required": ["notebookUrl"],
+                      "properties": {
+                        "notebookUrl": {
+                          "type": "string",
+                          "description": "Full URL of the notebook to execute."
+                        },
+                        "parameters": {
+                          "type": "object",
+                          "description": "(Optional) Dictionary of parameters to inject before running.",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Successful execution",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "outputs": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "cellIndex": {
+                                  "type": "integer",
+                                  "description": "Index of the cell"
+                                },
+                                "output": {
+                                  "type": "string",
+                                  "description": "Textual output of the cell"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400": {
+                  "description": "Bad request (invalid URL or missing parameters)"
+                },
+                "500": {
+                  "description": "Internal server error during notebook execution"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "post_processing_instructions": "",
+  "knowledge_files_instructions": "",
+  "prefill_conversation": []
+}
